@@ -1,9 +1,34 @@
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, WMSTileLayer } from 'react-leaflet';
+import { MapContainer, TileLayer, WMSTileLayer, useMap } from 'react-leaflet';
 import { useParams } from 'react-router-dom';
 import 'leaflet/dist/leaflet.css';
 import LayerControl from './LayerControl';
 import { wmsLayers } from '../config/layers';
+import L from 'leaflet';
+
+const LocationMarker = () => {
+  const map = useMap();
+
+  useEffect(() => {
+    map.locate({
+      setView: true,
+      maxZoom: 16,
+      enableHighAccuracy: true
+    });
+
+    map.on('locationfound', (e) => {
+      const radius = e.accuracy;
+      L.circle(e.latlng, radius).addTo(map);
+      L.marker(e.latlng).addTo(map);
+    });
+
+    map.on('locationerror', (e) => {
+      console.log('Error getting location:', e.message);
+    });
+  }, [map]);
+
+  return null;
+};
 
 const Map = () => {
   const { blockId } = useParams();
@@ -48,6 +73,7 @@ const Map = () => {
         zoom={10}
         style={{ height: '100%', width: '100%' }}
       >
+        <LocationMarker />
         {/* Base map layer */}
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
