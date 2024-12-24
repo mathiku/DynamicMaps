@@ -29,7 +29,6 @@ jobs:
         run: |
           npm install
           npm run build
-          npx azure-static-web-apps-cli deploy --timeout 60000
           
       - name: Build And Deploy
         uses: Azure/static-web-apps-deploy@v1
